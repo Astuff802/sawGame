@@ -8,7 +8,13 @@ import { Saw } from "./saw";
 
 // Initialize the CrazyGames SDK
 
-
+//barriers
+export const LEFTWALL = 225;
+export const RIGHTWALL = 775;
+export const CEILING = 25;
+export const FLOOR = 575;
+export const RINGWIDTH = 550;
+export const RINGHEIGHT = 550;
 
 export let player = new Player();
 export let saw = new Saw(200, 200);
@@ -21,13 +27,6 @@ export function setScore(value) {
 	score = value;
 }
 let enemyIdle;
-//barriers
-export const LEFTWALL = 225;
-export const RIGHTWALL = 775;
-export const CEILING = 25;
-export const FLOOR = 575;
-export const RINGWIDTH = 550;
-export const RINGHEIGHT = 550;
 // scenes
 export const MENU = 1;
 export const TIMETRIAL = 2;
