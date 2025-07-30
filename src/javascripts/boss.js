@@ -7,13 +7,13 @@ export class Boss {
         this.health = 60;
         this.x = x == -1 ? 0 : x;
         this.y = y == -1 ? 0 : y;
-        this.targetX = (this.x <= (RINGWIDTH/2 + LEFTWALL) ? LEFTWALL + 200 : RIGHTWALL - 200);
-        this.targetY = CEILING + 200;  
+        this.targetX = (this.x <= (RINGWIDTH / 2 + LEFTWALL) ? LEFTWALL + 200 : RIGHTWALL - 200);
+        this.targetY = CEILING + 200;
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.moveTimer = 0;
         this.attackTimer = 450;
-        this.currentAttack = 0;
+        this.currentAttack = Math.floor(Math.random() * 4);;
         if (this.type == BULLETSTORM) {
             this.health = 130;
         }
@@ -38,7 +38,7 @@ export class Boss {
         }
         if (this.type == BULLETSTORM) {
             if (this.health >= 120) {
-                text("Survive!", RINGWIDTH / 2, RINGWIDTH / 2);
+                text("Survive!", RINGWIDTH / 2 + LEFTWALL, RINGHEIGHT / 2 + CEILING);
             }
         }
         if (this.type == DREVIL) {
@@ -74,9 +74,9 @@ export class Boss {
                     let randomDirection = random(0, TWO_PI);
                     this.targetX = constrain(this.x + cos(randomDirection) * 400, LEFTWALL + 100, RIGHTWALL - 100);
                     this.targetY = constrain(this.y + sin(randomDirection) * 400, CEILING + 100, FLOOR - 100);
-                    if(bosses.length < 2){
+                    if (bosses.length < 2) {
                         this.moveTimer = 200;
-                    }else{
+                    } else {
                         this.moveTimer = 100;
                     }
                     // while(this.targetX < LEFTWALL + 75 || this.targetX > RIGHTWALL - 75 || this.targetY < CEILING + 75 || this.targetY > FLOOR - 75){
@@ -93,33 +93,36 @@ export class Boss {
 
 
 
-            if(this.currentAttack == 0 && this.attackTimer % 10 == 0 && this.attackTimer <= 150){
+            if (this.currentAttack == 0 && this.attackTimer % 10 == 0 && this.attackTimer <= 150) {
                 this.twinStreamAttack();
             }
-            if(this.currentAttack == 1 && this.attackTimer <= 150){
+            if (this.currentAttack == 1 && this.attackTimer <= 150) {
                 this.twinRadiateAttack();
                 this.attackTimer = 0;
             }
-            if(this.currentAttack == 2 && this.attackTimer <= 150){
+            if (this.currentAttack == 2 && this.attackTimer <= 150) {
                 this.chaserStorm();
                 this.attackTimer = 0;
             }
-            if (this.attackTimer <= 0){
-                this.currentAttack = Math.floor(Math.random() * 3);
-                if(bosses.length < 2){
+            if (this.currentAttack == 3 && this.attackTimer % 50 == 0 && this.attackTimer <= 150) {
+                this.twinShotGun();
+            }
+            if (this.attackTimer <= 0) {
+                this.currentAttack = Math.floor(Math.random() * 4);
+                if (bosses.length < 2) {
                     this.attackTimer = 200;
-                }else{
+                } else {
                     this.attackTimer = 300;
                 }
             }
 
             this.attackTimer--;
         }
-        
+
 
     }
 
-    chaserStorm(){
+    chaserStorm() {
         push();
         angleMode(DEGREES);
         let amountOfProngs = 6;
@@ -137,7 +140,20 @@ export class Boss {
         pop();
     }
 
-    twinRadiateAttack(){
+
+    twinShotGun() {
+        angleMode(RADIANS);
+        let angle = atan2(player.y - this.y, player.x - this.x);
+        let offsets = [0, 0.2, -0.2];
+        offsets.forEach(offset => {
+            let targetX = this.x + (800 * cos(angle + offset));
+            let targetY = this.y + (800 * sin(angle + offset));
+            spawn(this.x, this.y, BULLETBARRIER, targetX, targetY);
+        });
+    }
+
+
+    twinRadiateAttack() {
         push();
         angleMode(DEGREES);
         let amountOfProngs = 12
@@ -159,9 +175,9 @@ export class Boss {
         pop();
     }
 
-    twinStreamAttack(){
-        for (let i = 0; i < 1000; i++){
-            if(i%10 == 0){
+    twinStreamAttack() {
+        for (let i = 0; i < 1000; i++) {
+            if (i % 10 == 0) {
                 let targetX = player.x;
                 let targetY = player.y;
                 spawn(this.x, this.y, BULLETBARRIER, targetX, targetY);

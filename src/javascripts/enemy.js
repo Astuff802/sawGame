@@ -1,4 +1,4 @@
-import { BULLET, BULLETBARRIER, CEILING, CHASER, DREVILSTAGE, equilateral, FROG, goToward, heldPowerups, kill, LEFTWALL, MOLASSES, player, RINGHEIGHT, RINGWIDTH, scene, stage, STANDER, SURVIVE, TRACER } from "./main";
+import { BULLET, BULLETBARRIER, CEILING, CHASER, DREVILSTAGE, equilateral, FROG, goToward, heldPowerups, kill, LEFTWALL, MOLASSES, player, RINGHEIGHT, RINGWIDTH, scene, stage, STANDER, SURVIVE, TRACER, CRASHZONE } from "./main";
 
 export class Enemy {
     constructor(x, y, i, type, targetX = -1, targetY = -1) {
@@ -7,12 +7,14 @@ export class Enemy {
         this.id = i;
         this.dx = 0;
         this.dy = 0;
-        this.w = 20 * 1.375;
+        this.w = type !== CRASHZONE ? 20 * 1.375 : 95*2;
+
         this.type = type;
         this.targetX = targetX;
         this.targetY = targetY;
         this.killable = false;
         this.patternDelta = 1;
+        this.crashTimer = 300;
         let nextX;
         let nextY;
         this.xPattern = [createVector(30, 30), createVector(370, 370), createVector(30, 370), createVector(370, 30)];
@@ -88,7 +90,7 @@ export class Enemy {
 		this.facingAngle = 0;
 
         if (this.type == BULLET) {
-            this.speed = 3;
+            this.speed = 2.5;
             this.moveTowardBullet(this.targetX, this.targetY);
         }
         if (this.type == CHASER) {
@@ -161,6 +163,22 @@ export class Enemy {
 
 			pop();
 		}
+
+        if(this.type === CRASHZONE){
+            push();
+            let opacity = (this.crashTimer) % 25 <= 25/2 ? 180 : 80;
+            if(this.crashTimer < 50){
+                opacity = 80;
+            }
+            if(this.crashTimer < 5){
+                opacity = 180;
+            }
+            // console.log(this.crashTimer);
+            noStroke();
+            fill(220, 110, 110, opacity);
+            ellipse(this.x,this.y,200,200);
+            pop();
+        }
     }
     check(x, y) {
         switch (this.type) {
@@ -171,6 +189,11 @@ export class Enemy {
                 return false;
             case BULLETBARRIER:
                 if (dist(this.x, this.y, LEFTWALL + (RINGWIDTH / 2), CEILING + (RINGHEIGHT / 2)) >= 700) {
+                    kill(this.id);
+                }
+                return false;
+            case CRASHZONE:
+                if(this.crashTimer <= 0){
                     kill(this.id);
                 }
                 return false;
@@ -256,6 +279,11 @@ export class Enemy {
 				this.isJumping = false;
 			}
 		}
+        if(this.type === CRASHZONE){
+            if(this.crashTimer > 0){    
+                this.crashTimer -= 1;
+            }
+        }
     }
 
     moveToward(x, y) {

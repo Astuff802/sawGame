@@ -1,4 +1,4 @@
-import { BLASTER, blasters, BREATHER, enemies, FLASH, goToward, kill, LIGHTNING, MATCHALATTE, MOLASSES, ONEUP, player, PRICKLY, RAGE, RETURNER, RICOCHET, saw, score, setScore, TBOUNCE } from "./main";
+import { grayPanel, BLASTER, blasters, BREATHER, enemies, FLASH, goToward, kill, LIGHTNING, MATCHALATTE, MOLASSES, ONEUP, player, PRICKLY, RAGE, RETURNER, RICOCHET, saw, score, setScore, TBOUNCE } from "./main";
 import { Saw } from "./saw";
 
 export class Powerup {
@@ -49,7 +49,9 @@ export class Powerup {
 
     activate() {
         if (this.type == RETURNER) {
-            saw.return = true;
+            if(saw.gotFar == true){
+                saw.return = true;
+            }
         }
         if (this.type == FLASH) {
             for (let i = 0; i < enemies.length; i++) {
@@ -173,10 +175,10 @@ export class Powerup {
 
     showDescription() {
         push();
-        rectMode(CENTER);
-        rect(this.x, this.y - 75, 125, 100);
-        textAlign(LEFT);
-        text(this.description, this.x + 5, this.y - 120, 120);
+        imageMode(CENTER);
+        image(grayPanel, this.x, this.y - 75, 125, 100);
+        textAlign(CENTER);
+        text(this.description, this.x - 55, this.y - 105, 110);
         pop();
 
         if (this.isPerk) {

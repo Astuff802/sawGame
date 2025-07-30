@@ -1,3 +1,5 @@
+import {greyButton, normalFont} from './main.js';
+
 export class Button {
     constructor(x, y, w, h, t, f) {
         this.x = x;
@@ -9,9 +11,10 @@ export class Button {
     }
     show() {
         push();
-        rectMode(CENTER);
-        rect(this.x, this.y, this.w, this.h);
+        imageMode(CENTER);
+        image(greyButton, this.x, this.y, this.w, this.h);
         textAlign(CENTER);
+        textFont(normalFont);
         text(this.text, this.x, this.y + 5);
         pop();
     }

@@ -5,7 +5,7 @@ export class Saw {
 	constructor(x, y, isBlaster = false, ttl = -1) {
 		this.x = x;
 		this.y = y;
-		this.w = 20 * 1.375;
+		this.w = 20 * 2;
 		this.xSpeed = 4.5;
 		this.ySpeed = 4.5;
 		this.going = false;
@@ -18,6 +18,7 @@ export class Saw {
 		this.defaultSpeed = 13;
 		this.animationTimer = 0;
 		this.animationIndex = 0;
+		this.animationDirection = 1;
 	}
 	update() {
 		let hit = false;
@@ -153,6 +154,7 @@ export class Saw {
 		if (hit == true && !this.isBlaster) {
 			this.ySpeed *= 0.60;
 			this.xSpeed *= 0.60;
+			// this.animationDirection *= -1;
 			this.hitCount++;
 		}
 		if (dist(this.x, this.y, player.x, player.y) > 40 * 1.375) {
@@ -178,7 +180,12 @@ export class Saw {
 			this.ySpeed = cringe.y * 7;
 			if ((dist(this.x, this.y, player.x, player.y) < 40 * 1.375 && this.gotFar) || player.hasSaw == true) {
 				this.return = false;
+				this.gotFar = false;
 			}
+		}
+
+		if(player.hasSaw == true && !this.isBlaster){
+			this.return = false;
 		}
 
 		if (this.hitCount == 4) {
@@ -246,9 +253,12 @@ export class Saw {
 			translate(this.x, this.y);
 			let angle = atan2(this.ySpeed, this.xSpeed);
 			// console.log("Angle in radians:", angle);
+			// if(cos(angle) < 0){
+			// 	angle += PI;
+			// }
 			rotate(angle - PI / 2);
 			// console.log(gleebySprites.imageArray[this.animationIndex]);
-			image(gleebySprites.imageArray[this.animationIndex], 0, 0, this.w + 20, this.w + 20);
+			image(gleebySprites.imageArray[this.animationIndex], 0, 0, this.w, this.w);
 			pop();
 		}
 		this.animationTimer++;
@@ -256,8 +266,11 @@ export class Saw {
 		// console.log(createVector(this.xSpeed, this.ySpeed).mag());
 		if (this.animationTimer >= this.frameRate) {
 			this.animationTimer = 0;
-			this.animationIndex += 1;
-			if (this.animationIndex >= gleebySprites.imageArray.length - 1) {
+			this.animationIndex += this.animationDirection;
+			if (this.animationIndex < 0) {
+				this.animationIndex = gleebySprites.imageArray.length - 1;
+			}
+			if (this.animationIndex >= gleebySprites.imageArray.length) {
 				this.animationIndex = 0;
 			}
 

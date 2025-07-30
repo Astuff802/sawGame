@@ -42,6 +42,7 @@ export const STANDER = 2;
 export const BULLETBARRIER = 3;
 export const TRACER = 4;
 export const FROG = 5;
+export const CRASHZONE = 6;
 //powerup types
 export const RETURNER = 0;
 export const FLASH = 1;
@@ -58,9 +59,15 @@ export const BREATHER = allPowerUps.length + 4;
 export const TBOUNCE = allPowerUps.length + 5;
 export const LIGHTNING = allPowerUps.length + 6;
 
+export const COLUMNSTAGE = 4;
+export const BULLETSTAGE = 9;
+export const DREVILSTAGE = 14;
+export const TWINSTAGE = 19;
+const allStages = [COLUMNSTAGE, BULLETSTAGE, DREVILSTAGE, TWINSTAGE];
 let stageBreaks = [10, 25, 40, 55, 56, 70, 85, 100, 115, 116, 130, 145, 160, 175, 176, 190, 205, 220, 235, 236, 250, 265, 280, 295, 310, 325, 340, 355, 370, 385, 400];
 // let stageBreaks = [0, 3, 40, 55, COLUMNSTAGE, 70, 85, 90, 105, 120, 135, 150, 165, 180];
 // let stageBreaks = [0, BULLETSTAGE, 25, 40, 55, 70, 85, 90, 105, COLUMNSTAGE, 120, 135, 150, 165, 180];
+let latestStage = 0;
 
 const allPerks = [PRICKLY, MOLASSES, MATCHALATTE, BREATHER, TBOUNCE, LIGHTNING];
 //boss types
@@ -70,7 +77,7 @@ export const DREVIL = 2;
 export const TWIN = 3;
 export let scene = MENU;
 let letChoose = false;
-let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 200, 150, 25, "Time trial", () => {
+let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time trial", () => {
 	scene = TIMETRIAL;
 	ttTimer = 0;
 	score = 0;
@@ -80,7 +87,7 @@ let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 200, 150, 25, "Time tria
 	for (let i = 0; i < 3; i++) {
 		enemies.push(new Enemy(random(20, 380), random(20, 380), i, CHASER));
 	}
-}), new Button(RINGWIDTH / 2 + LEFTWALL, 230, 150, 25, "Levels", () => scene = LEVELS), new Button(RINGWIDTH / 2 + LEFTWALL, 260, 150, 25, "Survival", () => {
+}), new Button(RINGWIDTH / 2 + LEFTWALL, 330, 150, 25, "Levels", () => scene = LEVELS), new Button(RINGWIDTH / 2 + LEFTWALL, 360, 150, 25, "Survival", () => {
 	scene = SURVIVE
 	scene = SURVIVE
 	score = 0;
@@ -96,7 +103,7 @@ let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 200, 150, 25, "Time tria
 
 	blasters = [];
 	stage = 0;
-	player.lives = 1;
+	player.lives = 5;
 	hurtTimer = 0;
 	bosses = [];
 })];
@@ -106,8 +113,10 @@ let levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "M
 	const columns = 5;
 	const row = Math.floor(index / columns);
 	const column = index % columns;
-
-	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + row * 100 + 50, 80, 80, `Stage ${index + 1}`, () => {
+	if(index > 19){
+		return;
+	}
+	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
 		scene = SURVIVE
 		score = stageScore;
 		player.hasSaw = true;
@@ -150,10 +159,7 @@ let surviveOverButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Tr
 	player.setMaxSpeed = player.defaultSpeed;
 	player.maxSpeed = player.defaultSpeed;
 }), new Button(RINGWIDTH / 2 + LEFTWALL, 335, 100, 25, "Menu", () => scene = MENU)]
-export const COLUMNSTAGE = 4;
-export const BULLETSTAGE = 9;
-export const DREVILSTAGE = 14;
-export const TWINSTAGE = 19;
+
 let ttTimer = 0;
 let spawnTime = 50;
 let breatheTimer = 0;
@@ -174,9 +180,11 @@ export function setHurtTimer(value) {
 export let bosses = [];
 export let img;
 export let gleeby;
+
+
 // let testBoss = new Boss(COLUMNLORD);
 export let gleebySprites = {
-	"spriteSheetFilePath" : "src/images/ColoredTransparentGleebyv1.png",
+	"spriteSheetFilePath" : "src/images/Characters/Gleebylines_SS.png",
 	"spriteCount" : 8,
 	"spriteWidth" : 200,
 	"spriteHeight" : 200,
@@ -185,14 +193,14 @@ export let gleebySprites = {
 	"spritesPerRow" : 4,
 	"load" : function() {
 		this.spriteSheet = loadImage(this.spriteSheetFilePath, () => {
-			console.log("Sprite sheet loaded successfully");
+			console.log("Gleeby Sprite sheet loaded successfully");
 			this.loadSpriteArray();
 		}, () => {
-			console.error("Failed to load sprite sheet");
+			console.error("Gleeby Failed to load sprite sheet");
 		});
 	},
 	"loadSpriteArray" : function() {
-		for(let j = 0; j < (this.spriteCount / 5); j++){
+		for(let j = 0; j < (this.spriteCount / this.spritesPerRow); j++){
 			for (let i = 0; i < this.spritesPerRow; i++){
 				if(this.imageArray.length >= this.spriteCount){
 					return;
@@ -202,11 +210,16 @@ export let gleebySprites = {
 		}
 	}
 }
+// asset stuff
+export let titleFont, menuBackground, grayPanel, greyButton, normalFont;
 
 export function preload() {
-	img = loadImage('src/images/cowboyTest.png');
-	gleeby = loadImage('src/images/AlienGuy.png');
 	gleebySprites.load();
+	titleFont = loadFont('src/fonts/MetalMania-Regular.ttf');
+	menuBackground = loadImage('src/images/BackgroundImages/GloryInTheRingGameBackground.png');
+	grayPanel = loadImage('src/images/UI/grey_panel.png');
+	greyButton = loadImage('src/images/UI/grey_button02.png');
+	normalFont = loadFont('src/fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf');
 }
 
 
@@ -241,6 +254,7 @@ export async function setup() {
 	// } catch (e) {
 	// 	console.log("Banner request error", e);
 	// }
+	textFont(normalFont);
 }
 let dinkle = 0;
 
@@ -293,9 +307,16 @@ function levelsDraw() {
 }
 
 function menuDraw() {
+	push();
+	image(menuBackground, LEFTWALL, CEILING, RINGWIDTH, RINGHEIGHT);
 	textAlign(CENTER);
+	textFont(titleFont);
+	textSize(64);
+	imageMode(CENTER);
+	image(greyButton, RINGWIDTH / 2 + LEFTWALL, 180, 500, 100);
+	text("Glory in the Ring", RINGWIDTH / 2 + LEFTWALL, 200);
+	pop();
 	score = 0;
-	text("Saw Game :D", RINGWIDTH / 2 + LEFTWALL, 100);
 	for (let i = 0; i < menuButtons.length; i++) {
 		menuButtons[i].show();
 	}
@@ -404,10 +425,14 @@ function surviveDraw() {
 					spawn(spawnX, spawnY, BULLET);
 				} else {
 					if (stage > COLUMNSTAGE) {
-						if (Math.random() > 0.5) {
-							spawn(spawnX, spawnY, TRACER);
-						} else {
+						if (Math.random() > 0.35) {
 							spawn(spawnX, spawnY, CHASER);
+						} else {
+							if(Math.random() > 0.5 || stage <= BULLETSTAGE){
+								spawn(spawnX, spawnY, TRACER);
+							}else{
+								spawn(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), CRASHZONE);
+							}
 						}
 					} else {
 						spawn(spawnX, spawnY, CHASER);
@@ -433,7 +458,7 @@ function surviveDraw() {
 					if (bosses[0].health >= 80) {
 						console.log("bash attack");
 						bosses[0].bashSlam();
-						ttTimer = 45;
+						ttTimer = 60;
 					} else if (bosses[0].health < 80 && bosses[0].health >= 40) {
 						console.log("criss attack");
 						bosses[0].theOldCrissCross();
@@ -494,27 +519,29 @@ function surviveDraw() {
 	for (let i = 0; i < enemies.length; i++) {
 		enemies[i].show();
 		enemies[i].update(player.x, player.y);
-		if (player.checkDead(enemies[i].x, enemies[i].y, enemies[i].w)) {
-			if (player.rageTimer > 0) {
-				kill(i);
-				continue;
-			} else {
-				if (player.lives <= 0) {
-					player.lifeTimer = 0;
-					scene = SURVIVEOVER;
-					// window.CrazyGames.SDK.ad.requestAd("midgame", callbacks);
+		if(enemies[i]?.crashTimer < 5 || enemies[i].type !== CRASHZONE){
+			if (player.checkDead(enemies[i].x, enemies[i].y, enemies[i].w)) {
+				if (player.rageTimer > 0) {
+					kill(i);
+					continue;
+				} else {
+					if (player.lives <= 0) {
+						player.lifeTimer = 0;
+						scene = SURVIVEOVER;
+						// window.CrazyGames.SDK.ad.requestAd("midgame", callbacks);
 
-				}
-				for (let i = 0; i < heldPowerups.length; i++) {
-					if (heldPowerups[i].type == PRICKLY) {
-						let shoot = new Powerup(-50, -50, BLASTER);
-						shoot.activate();
 					}
+					for (let i = 0; i < heldPowerups.length; i++) {
+						if (heldPowerups[i].type == PRICKLY) {
+							let shoot = new Powerup(-50, -50, BLASTER);
+							shoot.activate();
+						}
+					}
+					hurtTimer = 170;
 				}
-				hurtTimer = 170;
 			}
-		}
-		if (!player.hasSaw || enemies[i].type == BULLET) {
+		}	
+		if (!player.hasSaw || enemies[i].type == BULLET || enemies[i].type === CRASHZONE) {
 			if (enemies[i].check(saw.x, saw.y)) {
 				for (let i = 0; i < heldPowerups.length; i++) {
 					if (heldPowerups[i].type == RICOCHET && saw.hitOne == false && enemies.length >= 1) {
@@ -598,6 +625,8 @@ function surviveDraw() {
 			if (letChoose) {
 				letChoose = false;
 				stage++;
+				latestStage ++;
+				resetLevelButtons();
 				breatheTimer = -1;
 				if (stage == COLUMNSTAGE) {
 					bosses.push(new Boss(COLUMNLORD));
@@ -652,9 +681,9 @@ function surviveDraw() {
 	push();
 	fill(255, 255, 255);
 	strokeWeight(2);
-	rect(RIGHTWALL - 100, CEILING + 20, 80, 20);
+	image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
 	fill(0);
-	text("Score: " + score, RIGHTWALL - 70, CEILING + 35);
+	text("Score: " + score, RIGHTWALL - 95, CEILING + 35);
 	pop();
 	////////////
 	//When do i show the breathe timer text
@@ -705,9 +734,7 @@ function surviveDraw() {
 			player.xSpeed = 0;
 			player.ySpeed = 0;
 			player.hasSaw = true;
-
 		}
-		text("Choose: ", 200, 200);
 	}
 	///////////////
 
@@ -756,7 +783,7 @@ function surviveOverDraw() {
 }
 
 function pauseDraw() {
-	text("PAUSED", 200, 200);
+	text("PAUSED", RINGWIDTH / 2 + LEFTWALL, RINGHEIGHT / 2 + CEILING);
 }
 
 export function mousePressed() {
@@ -817,7 +844,9 @@ export function spawn(x, y, type, tx = -1, ty = -1) {
 		enemies.push(new Enemy(x, y, 0, TRACER));
 	} else if (type == FROG) {
 		enemies.push(new Enemy(x, y, 0, FROG));
-	} else {
+	} else if (type === CRASHZONE){
+		enemies.push(new Enemy(x, y, 0, CRASHZONE));
+	}else {
 		enemies.push(new Enemy(x, y, 0, STANDER));
 	}
 	for (let i = 0; i < enemies.length; i++) {
@@ -884,4 +913,36 @@ export function equilateral(x, y, theta, size) {
 		x + cos(theta - TAU / 3) * size,
 		y + sin(theta - TAU / 3) * size
 	);
+}
+
+function resetLevelButtons() {
+	[0].concat(stageBreaks).forEach((stageScore, index) => {
+		const columns = 5;
+		const row = Math.floor(index / columns);
+		const column = index % columns;
+		if(index > latestStage){
+			return;
+		}
+		levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + row * 100 + 50, 80, 80, `Stage ${index + 1}`, () => {
+			scene = SURVIVE
+			score = stageScore;
+			player.hasSaw = true;
+			player.x = RINGWIDTH / 2 + LEFTWALL;
+			player.y = FLOOR - RINGHEIGHT / 2;
+			spawnTime = 50;
+			breatheTimer = -1;
+			enemies = [];
+			fieldUpgrades = [];
+			// heldPowerups = [new Powerup(0,0,MOLASSES, true)];
+			heldPowerups = [];
+			blasters = [];
+			stage = max(index - 1, 0);
+			player.lives = 5;
+			hurtTimer = 0;
+			bosses = [];
+			// Reset to default speed
+			player.setMaxSpeed = player.defaultSpeed;
+			player.maxSpeed = player.defaultSpeed;
+		}))
+	});
 }

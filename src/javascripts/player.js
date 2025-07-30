@@ -38,9 +38,9 @@ export class Player {
 				}
 			}
 		}
-		// ellipse(this.x, this.y, this.w, this.w);
-		imageMode(CENTER);
-		image(img, this.x, this.y - 15, this.w + 30, this.w + 30);
+		ellipse(this.x, this.y, this.w, this.w);
+		// imageMode(CENTER);
+		// image(img, this.x, this.y - 15, this.w + 30, this.w + 30);
 		pop();
 
 		for (let i = 0; i < this.lives; i++) {
