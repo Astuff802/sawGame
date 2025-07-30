@@ -1,4 +1,4 @@
-import { BULLET, BULLETBARRIER, CEILING, CHASER, DREVILSTAGE, equilateral, FROG, goToward, heldPowerups, kill, LEFTWALL, MOLASSES, player, RINGHEIGHT, RINGWIDTH, scene, stage, STANDER, SURVIVE, TRACER, CRASHZONE } from "./main";
+import { slimeWalks, spikeBalls, allRobots, BULLET, BULLETBARRIER, CEILING, CHASER, DREVILSTAGE, equilateral, FROG, goToward, heldPowerups, kill, LEFTWALL, MOLASSES, player, RINGHEIGHT, RINGWIDTH, scene, stage, STANDER, SURVIVE, TRACER, CRASHZONE } from "./main";
 
 export class Enemy {
     constructor(x, y, i, type, targetX = -1, targetY = -1) {
@@ -15,6 +15,7 @@ export class Enemy {
         this.killable = false;
         this.patternDelta = 1;
         this.crashTimer = 300;
+        this.animationTimer = 0;
         let nextX;
         let nextY;
         this.xPattern = [createVector(30, 30), createVector(370, 370), createVector(30, 370), createVector(370, 30)];
@@ -80,6 +81,7 @@ export class Enemy {
         this.thisPatternIndex = Math.floor(Math.random() * this.allPatterns.length);
         this.thisPattern = this.allPatterns[this.thisPatternIndex];
         this.currentPatternSpot = 0;
+        this.randomRobot = allRobots[Math.floor(Math.random() * allRobots.length)];
 
 		// frog
 		this.jumpTimer = 0;
@@ -134,16 +136,58 @@ export class Enemy {
         }
     }
     show() {
-        if (this.type == CHASER || this.type == STANDER || this.type == TRACER) {
+        if (this.type == CHASER) {
+            if(this.animationTimer === 0){
+                this.animationTimer = 100;
+            }
             push();
-            rectMode(CENTER);
-            rect(this.x, this.y, this.w, this.w);
+            imageMode(CENTER);
+            // Check if player is to the left or right
+            if (player.x < this.x) {
+                image(slimeWalks[(this.animationTimer) % 40 >= 20 ? 0 : 1], this.x, this.y, this.w + 10, this.w);
+            } else {
+                translate(this.x, this.y);
+                scale(-1, 1); // Flip horizontally
+                image(slimeWalks[(this.animationTimer) % 40 >= 20 ? 0 : 1], 0, 0, this.w + 10, this.w);
+            }
+            pop();
+            this.animationTimer -= 1;
+        }
+        if(this.type === STANDER){
+            if(this.animationTimer === 0){
+                this.animationTimer = 100;
+            }
+            push();
+            imageMode(CENTER);
+            image(slimeWalks[(this.animationTimer) % 40 >= 20 ? 0 : 1], this.x, this.y, this.w + 10, this.w);
+            pop();
+            this.animationTimer -= 1;
+        }
+        if(this.type == TRACER){
+            push();
+            // Calculate direction to next pattern spot
+            let target = this.thisPattern[this.currentPatternSpot];
+            let angle = atan2(target.y - this.y, target.x - this.x);
+
+            // Move origin to enemy position and rotate
+            translate(this.x, this.y);
+            rotate(angle);
+
+            // Draw image centered
+            imageMode(CENTER);
+            image(this.randomRobot, 0, 0, this.w, this.w);
+
             pop();
         }
         if (this.type == BULLET || this.type == BULLETBARRIER) {
+            if(this.animationTimer === 0){
+                this.animationTimer = 100;
+            }
             push();
-            ellipse(this.x, this.y, this.w, this.w);
+            imageMode(CENTER);
+            image(spikeBalls[(this.animationTimer) % 10 >= 5? 0 : 1], this.x, this.y, this.w + 10, this.w + 10);
             pop();
+            this.animationTimer -= 1;
         }
 		if (this.type == FROG) {
 			push();

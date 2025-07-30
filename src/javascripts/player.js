@@ -14,7 +14,7 @@ export class Player {
 		this.maxSpeed = this.defaultSpeed;
 		this.hasSaw = false;
 		this.w = 20 * 1.375;
-		this.lives = 20;
+		this.lives = 5;
 		this.lifeTimer = 0;
 		this.rageTimer = 0;
 	}

@@ -84,8 +84,9 @@ let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time tria
 	player.hasSaw = true;
 	player.x = RINGWIDTH / 2 + LEFTWALL;
 	player.y = RINGWIDTH / 2 + LEFTWALL;
+	clearEnemies();
 	for (let i = 0; i < 3; i++) {
-		enemies.push(new Enemy(random(20, 380), random(20, 380), i, CHASER));
+		enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
 	}
 }), new Button(RINGWIDTH / 2 + LEFTWALL, 330, 150, 25, "Levels", () => scene = LEVELS), new Button(RINGWIDTH / 2 + LEFTWALL, 360, 150, 25, "Survival", () => {
 	scene = SURVIVE
@@ -95,20 +96,36 @@ let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time tria
 	player.x = RINGWIDTH / 2 + LEFTWALL;
 	player.y = FLOOR - RINGHEIGHT / 2;
 	spawnTime = 50;
-	breatheTimer = -1;
+	breatheTimer = 0;
 	enemies = [];
 	fieldUpgrades = [];
 	// heldPowerups = [new Powerup(0,0,MOLASSES, true)];
 	heldPowerups = [];
-
 	blasters = [];
 	stage = 0;
 	player.lives = 5;
 	hurtTimer = 0;
 	bosses = [];
 })];
-let ttOverButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Try Again? (space)", () => scene = TIMETRIAL), new Button(200, 335, 100, 25, "Menu", () => scene = MENU)];
+let ttOverButtons = [
+	new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Try Again? (space)", () => {
+		scene = TIMETRIAL;
+		ttTimer = 0;
+		score = 0;
+		player.hasSaw = true;
+		player.x = RINGWIDTH / 2 + LEFTWALL;
+		player.y = RINGWIDTH / 2 + LEFTWALL;
+		clearEnemies();
+		for (let i = 0; i < 3; i++) {
+			enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
+		}
+	}),
+	new Button(RINGWIDTH / 2 + LEFTWALL, 350, 150, 25, "Menu", () => scene = MENU)
+];
 let levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "Menu", () => scene = MENU)];
+let pauseButtons = [
+		new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 450, 150, 25, "Resume", () => scene = SURVIVE),
+		new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 400, 150, 25, "Menu", () => scene = MENU)];
 [0].concat(stageBreaks).forEach((stageScore, index) => {
 	const columns = 5;
 	const row = Math.floor(index / columns);
@@ -211,7 +228,7 @@ export let gleebySprites = {
 	}
 }
 // asset stuff
-export let titleFont, menuBackground, grayPanel, greyButton, normalFont;
+export let slimeWalks, slimeWalk1, slimeWalk2, spikeBalls, spikeBall1, spikeBall2, titleFont, menuBackground, grayPanel, greyButton, normalFont, blueRobot, greenRobot, redRobot, yellowRobot, allRobots;
 
 export function preload() {
 	gleebySprites.load();
@@ -220,6 +237,17 @@ export function preload() {
 	grayPanel = loadImage('src/images/UI/grey_panel.png');
 	greyButton = loadImage('src/images/UI/grey_button02.png');
 	normalFont = loadFont('src/fonts/Merriweather-VariableFont_opsz,wdth,wght.ttf');
+	blueRobot = loadImage('src/images/Enemies/Robots/robot_blue.png');
+	greenRobot = loadImage('src/images/Enemies/Robots/robot_green.png');
+	redRobot = loadImage('src/images/Enemies/Robots/robot_red.png');
+	yellowRobot = loadImage('src/images/Enemies/Robots/robot_yellow.png');
+	allRobots = [blueRobot, greenRobot, redRobot, yellowRobot];
+	spikeBall1 = loadImage('src/images/Enemies/SpikeBall/spikeBall1.png');
+	spikeBall2 = loadImage('src/images/Enemies/SpikeBall/spikeBall_2.png');
+	spikeBalls = [spikeBall1, spikeBall2];
+	slimeWalk1 = loadImage('src/images/Enemies/Slime/slimeWalk1.png');
+	slimeWalk2 = loadImage('src/images/Enemies/Slime/slimeWalk2.png');
+	slimeWalks = [slimeWalk1, slimeWalk2];
 }
 
 
@@ -260,14 +288,10 @@ let dinkle = 0;
 
 export function draw() {
 	background(0);
-    // if (gleebySprites.imageArray.length > 0) {
-    //     image(gleebySprites.imageArray[Math.floor(dinkle/20) % gleebySprites.spriteCount], 100, 100, 50, 50); // Draw the first sprite
-    // } else {
-    //     console.error("Sprite array is empty");
-    // }
-	// dinkle++;
-	background(0);
+	push();
+	fill(200)
 	rect(225, 25, 550, 550);
+	pop();
 	if (scene == MENU) {
 		menuDraw();
 	} else if (scene == TIMETRIAL) {
@@ -286,14 +310,13 @@ export function draw() {
 }
 
 function ttOverDraw() {
-	textAlign(CENTER);
 	push();
+	textAlign(CENTER);
 	fill(255, 255, 255);
 	strokeWeight(2);
-	rectMode(CENTER);
-	rect(RINGWIDTH / 2 + LEFTWALL, 260, 80, 20);
+	image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
 	fill(0);
-	text("Score: " + score, RINGWIDTH / 2 + LEFTWALL, 264)
+	text("Score: " + score, RIGHTWALL - 70, CEILING + 35);
 	pop();
 	for (let i = 0; i < ttOverButtons.length; i++) {
 		ttOverButtons[i].show();
@@ -301,6 +324,7 @@ function ttOverDraw() {
 }
 
 function levelsDraw() {
+	image(menuBackground, LEFTWALL, CEILING, RINGWIDTH, RINGHEIGHT);
 	for (let i = 0; i < levelButtons.length; i++) {
 		levelButtons[i].show();
 	}
@@ -323,33 +347,44 @@ function menuDraw() {
 }
 
 function timeTrialDraw() {
+	
 	if (ttTimer == 0) {
-		ttTimer = 1141
+		// ttTimer = 1141
+		ttTimer = 100;
 		score = 0;
 	}
-	saw.show();
-	saw.update();
+	if (!player.hasSaw) {
+		saw.show();
+		saw.update();
+	}
 	player.show();
 	player.update();
 
 	for (let i = 0; i < enemies.length; i++) {
 		enemies[i].show();
 		if (!player.hasSaw) {
-			enemies[i].check(saw.x, saw.y);
+			if(enemies[i].check(saw.x, saw.y)){
+				enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
+				for (let j = 0; j < enemies.length; j++) {
+					enemies[j].id = j;
+				}
+				console.log(enemies);
+				i = 0;
+			}	
 		}
 	}
 
 	push();
-	noFill();
-	rect(10, 10, 100, 20);
-	fill(255, 0, 0)
-	// rect(10,10,Math.round(ttTimer / 60.0) * (100 / Math.round(1141 / 60.0)),20);
-	rect(10, 10, ttTimer * (100 / 1141), 20);
-	fill(255, 255, 255);
-	strokeWeight(2);
-	rect(322, 10, 80, 20);
-	fill(0);
-	text("Score: " + score, 350, 25)
+		noFill();
+		rect(LEFTWALL + 10, CEILING + 10, 100, 20);
+		fill(255, 0, 0)
+		rect(LEFTWALL + 10, CEILING + 10, ttTimer * (100 / 1141), 20);
+		//Score draw: 
+		fill(255, 255, 255);
+		strokeWeight(2);
+		image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
+		fill(0);
+		text("Score: " + score, RIGHTWALL - 95, CEILING + 35);
 	pop();
 
 	if (saw.check(player.x, player.y)) {
@@ -385,7 +420,9 @@ function surviveDraw() {
 	//How to get to the next stage
 	if (score >= stageBreaks[stage] && breatheTimer < 0) {
 		if (stage != COLUMNSTAGE && stage != BULLETSTAGE && stage != DREVILSTAGE && stage != TWINSTAGE) {
-			breatheTimer = 80;
+			breatheTimer = 180;
+			latestStage = stage + 1;
+			resetLevelButtons();
 		}
 	}
 
@@ -604,8 +641,7 @@ function surviveDraw() {
 			}
 		}
 		if (bosses.length == 0) { // Check if all bosses are defeated
-			console.log("bosses cleared");
-			breatheTimer = 80;
+			breatheTimer = 180;
 			enemies = [];
 		}
 	}
@@ -625,8 +661,6 @@ function surviveDraw() {
 			if (letChoose) {
 				letChoose = false;
 				stage++;
-				latestStage ++;
-				resetLevelButtons();
 				breatheTimer = -1;
 				if (stage == COLUMNSTAGE) {
 					bosses.push(new Boss(COLUMNLORD));
@@ -637,8 +671,7 @@ function surviveDraw() {
 				} else if (stage == TWINSTAGE) {
 					bosses.push(new Boss(TWIN, LEFTWALL + 200, CEILING - 110));
 					bosses.push(new Boss(TWIN, RIGHTWALL - 200, CEILING - 110));
-				}
-				else {
+				}else if(stage <= BULLETSTAGE) {
 					spawnTime -= 2;
 				}
 			}
@@ -687,10 +720,7 @@ function surviveDraw() {
 	pop();
 	////////////
 	//When do i show the breathe timer text
-	if (breatheTimer > 0 && enemies.length == 0 && (score >= stageBreaks[stage] || stage == COLUMNSTAGE || stage == BULLETSTAGE || stage == DREVILSTAGE || stage == TWINSTAGE)) {
-		push();
-		text("BREATHE", RINGWIDTH / 2 + LEFTWALL, 200);
-		pop();
+	if (breatheTimer > 0 && (score >= stageBreaks[stage] || stage == COLUMNSTAGE || stage == BULLETSTAGE || stage == DREVILSTAGE || stage == TWINSTAGE)) {
 		breatheTimer--;
 		letChoose = true;
 	}
@@ -772,10 +802,9 @@ function surviveOverDraw() {
 	push();
 	fill(255, 255, 255);
 	strokeWeight(2);
-	rectMode(CENTER);
-	rect(RINGWIDTH / 2 + LEFTWALL, 200, 80, 20);
+	image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
 	fill(0);
-	text("Score: " + score, RINGWIDTH / 2 + LEFTWALL, 206)
+	text("Score: " + score, RIGHTWALL - 95, CEILING + 35);
 	pop();
 	for (let i = 0; i < surviveOverButtons.length; i++) {
 		surviveOverButtons[i].show();
@@ -783,7 +812,19 @@ function surviveOverDraw() {
 }
 
 function pauseDraw() {
-	text("PAUSED", RINGWIDTH / 2 + LEFTWALL, RINGHEIGHT / 2 + CEILING);
+	push();
+	image(menuBackground, LEFTWALL, CEILING, RINGWIDTH, RINGHEIGHT);
+	image(grayPanel, RINGWIDTH / 2 + LEFTWALL - 100, RINGHEIGHT / 2 + CEILING - 50, 200, 65);
+	textFont(titleFont);
+	textAlign(CENTER);
+	textSize(32);
+	text("Paused", RINGWIDTH / 2 + LEFTWALL, RINGHEIGHT / 2 + CEILING - 10);
+	textSize(16);
+	textFont(normalFont);
+	for (let i = 0; i < pauseButtons.length; i++) {
+		pauseButtons[i].show();
+	}
+	pop();
 }
 
 export function mousePressed() {
@@ -812,6 +853,10 @@ export function mousePressed() {
 		for (let i = 0; i < surviveOverButtons.length; i++) {
 			surviveOverButtons[i].check(mouseX, mouseY);
 		}
+	} else if (scene == PAUSE) {
+		for (let i = 0; i < pauseButtons.length; i++) {
+			pauseButtons[i].check(mouseX, mouseY);
+		}
 	}
 
 }
@@ -821,9 +866,9 @@ export function kill(j) {
 		score++;
 	}
 	enemies.splice(j, 1);
-	if (scene == TIMETRIAL) {
-		spawn(random(20, 380), random(20, 380), STANDER);
-	}
+	// if (scene == TIMETRIAL) {
+	// 	spawn(random(LEFTWALL+20, RIGHTWALL-20), random(CEILING+20, FLOOR-20), STANDER);
+	// }
 	for (let i = 0; i < enemies.length; i++) {
 		enemies[i].id = i;
 	}
@@ -916,21 +961,22 @@ export function equilateral(x, y, theta, size) {
 }
 
 function resetLevelButtons() {
+	levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "Menu", () => scene = MENU)];
 	[0].concat(stageBreaks).forEach((stageScore, index) => {
-		const columns = 5;
-		const row = Math.floor(index / columns);
-		const column = index % columns;
-		if(index > latestStage){
-			return;
-		}
-		levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + row * 100 + 50, 80, 80, `Stage ${index + 1}`, () => {
+	const columns = 5;
+	const row = Math.floor(index / columns);
+	const column = index % columns;
+	if(index > latestStage){
+		return;
+	}
+	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
 			scene = SURVIVE
 			score = stageScore;
 			player.hasSaw = true;
 			player.x = RINGWIDTH / 2 + LEFTWALL;
 			player.y = FLOOR - RINGHEIGHT / 2;
 			spawnTime = 50;
-			breatheTimer = -1;
+			breatheTimer = 0;
 			enemies = [];
 			fieldUpgrades = [];
 			// heldPowerups = [new Powerup(0,0,MOLASSES, true)];
