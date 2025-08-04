@@ -114,14 +114,14 @@ let ttOverButtons = [
 	new Button(RINGWIDTH / 2 + LEFTWALL, 350, 150, 25, "Menu", () => scene = MENU)
 ];
 let pauseButtons = [
-		new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 450, 150, 25, "Resume", () => scene = SURVIVE),
-		new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 400, 150, 25, "Menu", () => scene = MENU)];
+	new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 450, 150, 25, "Resume", () => scene = SURVIVE),
+	new Button(RINGWIDTH / 2 + LEFTWALL, CEILING + 400, 150, 25, "Menu", () => scene = MENU)];
 let levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "Menu", () => scene = MENU)];
 [0].concat(stageBreaks).forEach((stageScore, index) => {
 	const columns = 5;
 	const row = Math.floor(index / columns);
 	const column = index % columns;
-	if(index > 19){
+	if (index > 19) {
 		return;
 	}
 	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
@@ -168,14 +168,14 @@ export let gleeby;
 
 // let testBoss = new Boss(COLUMNLORD);
 export let gleebySprites = {
-	"spriteSheetFilePath" : "src/images/Characters/Gleebylines_SS.png",
-	"spriteCount" : 8,
-	"spriteWidth" : 200,
-	"spriteHeight" : 200,
-	"imageArray" : [],
-	"spriteSheet" : null,
-	"spritesPerRow" : 4,
-	"load" : function() {
+	"spriteSheetFilePath": "src/images/Characters/Gleebylines_SS.png",
+	"spriteCount": 8,
+	"spriteWidth": 200,
+	"spriteHeight": 200,
+	"imageArray": [],
+	"spriteSheet": null,
+	"spritesPerRow": 4,
+	"load": function () {
 		this.spriteSheet = loadImage(this.spriteSheetFilePath, () => {
 			console.log("Gleeby Sprite sheet loaded successfully");
 			this.loadSpriteArray();
@@ -183,13 +183,13 @@ export let gleebySprites = {
 			console.error("Gleeby Failed to load sprite sheet");
 		});
 	},
-	"loadSpriteArray" : function() {
-		for(let j = 0; j < (this.spriteCount / this.spritesPerRow); j++){
-			for (let i = 0; i < this.spritesPerRow; i++){
-				if(this.imageArray.length >= this.spriteCount){
+	"loadSpriteArray": function () {
+		for (let j = 0; j < (this.spriteCount / this.spritesPerRow); j++) {
+			for (let i = 0; i < this.spritesPerRow; i++) {
+				if (this.imageArray.length >= this.spriteCount) {
 					return;
 				}
-				this.imageArray.push(this.spriteSheet.get(i * this.spriteWidth, j * this.spriteHeight,this.spriteWidth,this.spriteHeight));
+				this.imageArray.push(this.spriteSheet.get(i * this.spriteWidth, j * this.spriteHeight, this.spriteWidth, this.spriteHeight));
 			}
 		}
 	}
@@ -235,9 +235,9 @@ export async function setup() {
 	// 	console.log("Get user error: ", e);
 	// }
 
-	
 
-	
+
+
 	// try {
 	// 	// await is not mandatory when requesting banners,
 	// 	// but it will allow you to catch errors
@@ -301,7 +301,7 @@ function menuDraw() {
 }
 
 function timeTrialDraw() {
-	
+
 	if (ttTimer == 0) {
 		// ttTimer = 1141
 		ttTimer = 100;
@@ -317,22 +317,22 @@ function timeTrialDraw() {
 	for (let i = 0; i < enemies.length; i++) {
 		enemies[i].show();
 		if (!player.hasSaw) {
-			if(enemies[i].check(saw.x, saw.y)){
+			if (enemies[i].check(saw.x, saw.y)) {
 				enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
 				for (let j = 0; j < enemies.length; j++) {
 					enemies[j].id = j;
 				}
 				console.log(enemies);
 				i = 0;
-			}	
+			}
 		}
 	}
 
 	push();
-		noFill();
-		rect(LEFTWALL + 10, CEILING + 10, 100, 20);
-		fill(255, 0, 0)
-		rect(LEFTWALL + 10, CEILING + 10, ttTimer * (100 / 1141), 20);
+	noFill();
+	rect(LEFTWALL + 10, CEILING + 10, 100, 20);
+	fill(255, 0, 0)
+	rect(LEFTWALL + 10, CEILING + 10, ttTimer * (100 / 1141), 20);
 	pop();
 	drawScore();
 
@@ -408,21 +408,50 @@ function surviveDraw() {
 		}
 		if (breatheTimer <= 0 && letChoose == false && (potentialPointCount + score < stageBreaks[stage] || stage == COLUMNSTAGE || stage == BULLETSTAGE || stage == DREVILSTAGE || stage == TWINSTAGE)) {
 			if (bosses.length <= 0) {
-				if (Math.random() > 0.5 && score >= stageBreaks[0]) {
-					spawn(spawnX, spawnY, BULLET);
-				} else {
-					if (stage > COLUMNSTAGE) {
-						if (Math.random() > 0.35) {
-							spawn(spawnX, spawnY, CHASER);
-						} else {
-							if(Math.random() > 0.5 || stage <= BULLETSTAGE){
-								spawn(spawnX, spawnY, TRACER);
-							}else{
-								spawn(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), CRASHZONE);
-							}
-						}
-					} else {
+				// ...existing code...
+				if(stage === 0){
+					spawn(spawnX, spawnY, CHASER);
+				} else if (stage < COLUMNSTAGE) {
+					if (Math.random() < 0.5) {
 						spawn(spawnX, spawnY, CHASER);
+					} else {
+						spawn(spawnX, spawnY, BULLET);
+					}
+				} else if (stage < BULLETSTAGE) {
+					// Column lord to bullet hell: 60% chaser/bullet, 40% tracer
+					let r = Math.random();
+					if (r < 0.3) {
+						spawn(spawnX, spawnY, CHASER);
+					} else if (r < 0.6) {
+						spawn(spawnX, spawnY, BULLET);
+					} else {
+						spawn(spawnX, spawnY, TRACER);
+					}
+				} else if (stage < DREVILSTAGE) {
+					// Bullet hell to dr evil: 50% chaser/bullet, 25% tracer, 25% crash zone
+					let r = Math.random();
+					if (r < 0.25) {
+						spawn(spawnX, spawnY, CHASER);
+					} else if (r < 0.5) {
+						spawn(spawnX, spawnY, BULLET);
+					} else if (r < 0.75) {
+						spawn(spawnX, spawnY, TRACER);
+					} else {
+						spawn(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), CRASHZONE);
+					}
+				} else if (stage < TWINSTAGE) {
+					// Dr Evil to Twin: 40% chaser/bullet, 60% split between frog, tracer, crash zone
+					let r = Math.random();
+					if (r < 0.2) {
+						spawn(spawnX, spawnY, CHASER);
+					} else if (r < 0.4) {
+						spawn(spawnX, spawnY, BULLET);
+					} else if (r < 0.6) {
+						spawn(spawnX, spawnY, FROG);
+					} else if (r < 0.8) {
+						spawn(spawnX, spawnY, TRACER);
+					} else {
+						spawn(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), CRASHZONE);
 					}
 				}
 			} else {
@@ -505,7 +534,7 @@ function surviveDraw() {
 	for (let i = enemies.length - 1; i >= 0; i--) {
 		enemies[i].show();
 		enemies[i].update(player.x, player.y);
-		if(enemies[i]?.crashTimer < 5 || enemies[i].type !== CRASHZONE){
+		if (enemies[i]?.crashTimer < 5 || enemies[i].type !== CRASHZONE) {
 			if (player.checkDead(enemies[i].x, enemies[i].y, enemies[i].w)) {
 				if (player.rageTimer > 0) {
 					kill(i);
@@ -526,7 +555,7 @@ function surviveDraw() {
 					hurtTimer = 170;
 				}
 			}
-		}	
+		}
 		if (!player.hasSaw || enemies[i].type == BULLET || enemies[i].type === CRASHZONE) {
 			if (enemies[i].check(saw.x, saw.y)) {
 				for (let i = 0; i < heldPowerups.length; i++) {
@@ -619,7 +648,7 @@ function surviveDraw() {
 				} else if (stage == TWINSTAGE) {
 					bosses.push(new Boss(TWIN, LEFTWALL + 200, CEILING - 110));
 					bosses.push(new Boss(TWIN, RIGHTWALL - 200, CEILING - 110));
-				}else if(stage <= BULLETSTAGE) {
+				} else if (stage <= BULLETSTAGE) {
 					spawnTime -= 2;
 				}
 			}
@@ -806,9 +835,9 @@ export function spawn(x, y, type, tx = -1, ty = -1) {
 		enemies.push(new Enemy(x, y, 0, TRACER));
 	} else if (type == FROG) {
 		enemies.push(new Enemy(x, y, 0, FROG));
-	} else if (type === CRASHZONE){
+	} else if (type === CRASHZONE) {
 		enemies.push(new Enemy(x, y, 0, CRASHZONE));
-	}else {
+	} else {
 		enemies.push(new Enemy(x, y, 0, STANDER));
 	}
 	updateEnemyIDs();
@@ -878,13 +907,13 @@ export function equilateral(x, y, theta, size) {
 function resetLevelButtons() {
 	levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "Menu", () => scene = MENU)];
 	[0].concat(stageBreaks).forEach((stageScore, index) => {
-	const columns = 5;
-	const row = Math.floor(index / columns);
-	const column = index % columns;
-	if(index > latestStage){
-		return;
-	}
-	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
+		const columns = 5;
+		const row = Math.floor(index / columns);
+		const column = index % columns;
+		if (index > latestStage) {
+			return;
+		}
+		levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
 			scene = SURVIVE
 			score = stageScore;
 			player.hasSaw = true;
@@ -909,49 +938,51 @@ function resetLevelButtons() {
 }
 
 function drawScore() {
-    push();
-    image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
-    fill(0);
-    textAlign(LEFT); // or CENTER if you prefer, but be consistent
-    textFont(normalFont);
-    strokeWeight(2);
-    text("Score: " + score, RIGHTWALL - 95, CEILING + 35);
-    pop();
+	push();
+	image(greyButton, RIGHTWALL - 100, CEILING + 20, 80, 20);
+	fill(0);
+	textAlign(LEFT); // or CENTER if you prefer, but be consistent
+	textFont(normalFont);
+	strokeWeight(2);
+	text("Score: " + score, RIGHTWALL - 95, CEILING + 35);
+	pop();
 }
 
 function drawButtons(buttonArray) {
-    for (let i = 0; i < buttonArray.length; i++) {
-        buttonArray[i].show();
-    }
+	for (let i = 0; i < buttonArray.length; i++) {
+		buttonArray[i].show();
+	}
 }
 
 function checkButtons(buttonArray, mx, my) {
-    for (let i = 0; i < buttonArray.length; i++) {
-        buttonArray[i].check(mx, my);
-    }
+	for (let i = 0; i < buttonArray.length; i++) {
+		buttonArray[i].check(mx, my);
+	}
 }
 
-function resetGameState({scoreVal = 0, stageVal = 0, playerX, playerY, breathe = -1}) {
-    score = scoreVal;
-    player.hasSaw = true;
-    player.x = playerX;
-    player.y = playerY;
-    spawnTime = 50;
-    breatheTimer = breathe;
-    enemies = [];
-    fieldUpgrades = [];
-    heldPowerups = [];
-    blasters = [];
-    stage = stageVal;
-    player.lives = 5;
-    hurtTimer = 0;
-    bosses = [];
+function resetGameState({ scoreVal = 0, stageVal = 0, playerX, playerY, breathe = -1 }) {
+	score = scoreVal;
+	player.hasSaw = true;
+	player.x = playerX;
+	player.y = playerY;
+	spawnTime = 50;
+	breatheTimer = breathe;
+	enemies = [];
+	fieldUpgrades = [];
+	heldPowerups = [];
+	blasters = [];
+	stage = stageVal;
+	player.lives = 5;
+	hurtTimer = 0;
+	bosses = [];
 	player.setMaxSpeed = player.defaultSpeed;
 	player.maxSpeed = player.defaultSpeed;
 }
 
 function updateEnemyIDs() {
-    for (let i = 0; i < enemies.length; i++) {
-        enemies[i].id = i;
-    }
+	for (let i = 0; i < enemies.length; i++) {
+		enemies[i].id = i;
+	}
 }
+
+
