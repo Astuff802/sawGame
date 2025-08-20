@@ -15,7 +15,7 @@ export class Saw {
 		this.ttl = ttl;
 		this.hitOne = false;
 		this.hitCount = 0;
-		this.defaultSpeed = 13;
+		this.defaultSpeed = 15;
 		this.animationTimer = 0;
 		this.animationIndex = 0;
 		this.animationDirection = 1;
@@ -118,7 +118,7 @@ export class Saw {
 					reflection.add(bossVelocity);
 
 					// Reduce the speed of the reflection for balance
-					reflection.mult(0.5);
+					reflection.mult(0.66);
 
 					// Set the new velocity
 					this.setSpeed(reflection.x, reflection.y);

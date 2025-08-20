@@ -496,18 +496,6 @@ function surviveDraw() {
 		saw.show();
 		saw.update();
 	}
-	for (let i = 0; i < fieldUpgrades.length; i++) {
-		fieldUpgrades[i].show(fieldUpgrades[i].x, fieldUpgrades[i].y);
-		fieldUpgrades[i].showDescription();
-		if (fieldUpgrades[i].check(player.x, player.y, player.w)) {
-			if (fieldUpgrades[i].type == MATCHALATTE || fieldUpgrades[i].type == LIGHTNING) {
-				fieldUpgrades[i].activate();
-			}
-			heldPowerups.push(fieldUpgrades[i]);
-			fieldUpgrades = [];
-			i = 0;
-		}
-	}
 	// saw checks
 	if (saw.check(player.x, player.y)) {
 		saw.xSpeed = 0;
@@ -628,7 +616,7 @@ function surviveDraw() {
 	for (let i = 0; i < fieldUpgrades.length; i++) {
 		fieldUpgrades[i].show(fieldUpgrades[i].x, fieldUpgrades[i].y);
 		fieldUpgrades[i].showDescription();
-		if (fieldUpgrades[i].check(player.x, player.y, player.w)) {
+		if (fieldUpgrades[i].check(player.x, player.y, player.w) || fieldUpgrades[i].check(saw.x, saw.y, saw.w)) {
 			if (fieldUpgrades[i].type == MATCHALATTE || fieldUpgrades[i].type == LIGHTNING) {
 				fieldUpgrades[i].activate();
 			}
@@ -658,7 +646,7 @@ function surviveDraw() {
 	let modifier = 0;
 	for (let i = heldPowerups.length - 1; i >= 0; i--) {
 		if (heldPowerups[i].isPerk) {
-			modifier += heldPowerups[i].w + 10;
+			continue;
 		}
 		heldPowerups[i].show(i * (heldPowerups[i].w + 5) + 15 + LEFTWALL - modifier, CEILING + 20);
 		if (heldPowerups[i].type == ONEUP) {

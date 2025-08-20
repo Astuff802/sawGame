@@ -18,7 +18,7 @@ export class Boss {
             this.health = 130;
         }
         if (this.type == DREVIL) {
-            this.health = 100;
+            this.health = 120;
             this.x = RINGWIDTH / 2 + LEFTWALL;
             this.y = 0;
         }
