@@ -24,7 +24,8 @@ export default defineConfig({
 		}
 	},
 	server: {
-		port: 8080,
+		port: 8888,
+		host: true,
 		open: "/",
 	},
 	plugins: [
