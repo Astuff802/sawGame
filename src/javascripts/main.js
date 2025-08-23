@@ -599,6 +599,8 @@ function surviveDraw() {
 	player.show();
 	player.update();
 
+	console.log('Breathe timer:', breatheTimer);
+
 	//Check the bosses health:
 	if (bosses.length > 0) {
 		for (let i = bosses.length - 1; i >= 0; i--) { // Iterate backward to avoid index shifting
@@ -908,7 +910,7 @@ function resetLevelButtons() {
 			player.x = RINGWIDTH / 2 + LEFTWALL;
 			player.y = FLOOR - RINGHEIGHT / 2;
 			spawnTime = 50;
-			breatheTimer = 0;
+			breatheTimer = 1;
 			enemies = [];
 			fieldUpgrades = [];
 			// heldPowerups = [new Powerup(0,0,MOLASSES, true)];
