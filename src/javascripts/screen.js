@@ -9,7 +9,6 @@ export class TutorialScreen {
         this.width = RINGWIDTH;
         this.height = RINGHEIGHT;
         this.button = new Button(LEFTWALL + (RINGWIDTH / 2), CEILING + (RINGHEIGHT - 100), 200, 50, "Continue", () => {
-            console.log('Changing');
             setScene(this.nextScene);
         });
     }

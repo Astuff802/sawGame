@@ -123,7 +123,7 @@ let levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "M
 	const columns = 5;
 	const row = Math.floor(index / columns);
 	const column = index % columns;
-	if (index > 19) {
+	if (index > latestStage) {
 		return;
 	}
 	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {
@@ -166,11 +166,6 @@ let survivalTutorialScreen = new TutorialScreen(`
 let ttTimer = 0;
 let spawnTime = 50;
 let breatheTimer = 0;
-const callbacks = {
-	adFinished: () => console.log("End midgame ad"),
-	adError: (error) => console.log("Error midgame ad", error),
-	adStarted: () => console.log("Start midgame ad"),
-};
 export let stage = 5;
 export let heldPowerups = [new Powerup(200, 200, BLASTER)];
 let fieldUpgrades = [];
@@ -196,10 +191,9 @@ export let gleebySprites = {
 	"spritesPerRow": 4,
 	"load": function () {
 		this.spriteSheet = loadImage(this.spriteSheetFilePath, () => {
-			console.log("Gleeby Sprite sheet loaded successfully");
 			this.loadSpriteArray();
 		}, () => {
-			console.error("Gleeby Failed to load sprite sheet");
+			console.error("Gleeby sprite not loaded")
 		});
 	},
 	"loadSpriteArray": function () {
@@ -343,7 +337,6 @@ function timeTrialDraw() {
 				for (let j = 0; j < enemies.length; j++) {
 					enemies[j].id = j;
 				}
-				console.log(enemies);
 				i = 0;
 			}
 		}
@@ -493,11 +486,9 @@ function surviveDraw() {
 					bosses[0].health -= 1;
 				} else if (bosses[0].type == DREVIL) {
 					if (bosses[0].health >= 80) {
-						console.log("bash attack");
 						bosses[0].bashSlam();
 						ttTimer = 60;
 					} else if (bosses[0].health < 80 && bosses[0].health >= 40) {
-						console.log("criss attack");
 						bosses[0].theOldCrissCross();
 						ttTimer = 325;
 					} else if (bosses[0].health < 40) {
@@ -816,8 +807,6 @@ export function mousePressed() {
 		checkButtons(pauseButtons, mouseX, mouseY);
 	} else if (scene == SURVIVETUTORIAL) {
 		survivalTutorialScreen.button.check(mouseX, mouseY);
-
-		console.log("clicked");
 	}
 
 }

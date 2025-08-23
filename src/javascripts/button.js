@@ -24,14 +24,12 @@ export class Button {
                 if (my <= this.y + this.h / 2) {
                     if (my >= this.y - this.h / 2) {
                         this.f();
-                        console.log("dingle");
                         return true;
                     }
                 }
             }
         }
 
-        console.log("dingle");
         return false;
     }
 }
