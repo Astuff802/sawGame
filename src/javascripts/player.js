@@ -151,7 +151,7 @@ export class Player {
 
 	drawLine() {
 		push();
-		line(this.x, this.y, mouseX, mouseY);
+		// line(this.x, this.y, mouseX, mouseY);
 		pop();
 	}
 

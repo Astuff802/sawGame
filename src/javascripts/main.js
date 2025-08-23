@@ -5,6 +5,7 @@ import { Enemy } from "./enemy";
 import { Player } from "./player";
 import { Powerup } from "./powerup";
 import { Saw } from "./saw";
+import { TutorialScreen } from "./screen";
 
 // Initialize the CrazyGames SDK
 
@@ -35,6 +36,7 @@ export const LEVELS = 4;
 export const SURVIVE = 5;
 export const SURVIVEOVER = 6;
 export const PAUSE = 7;
+export const SURVIVETUTORIAL = 8;
 //enemy types
 export const CHASER = 0;
 export const BULLET = 1;
@@ -95,7 +97,7 @@ let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time tria
 		playerY: FLOOR - RINGHEIGHT / 2,
 		breathe: 0
 	});
-	scene = SURVIVE
+	scene = SURVIVETUTORIAL;
 })];
 let ttOverButtons = [
 	new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Try Again? (space)", () => {
@@ -143,6 +145,23 @@ let surviveOverButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Tr
 	});
 	scene = SURVIVE
 }), new Button(RINGWIDTH / 2 + LEFTWALL, 335, 100, 25, "Menu", () => scene = MENU)]
+
+//Screens and stuff
+let survivalTutorialScreen = new TutorialScreen(`
+	Fight your way through all 40 rounds and
+	beat all the bosses to win the title belt!
+	Click to launch your partner at enemies, 
+	and press space to use powerups you collect
+	at the end of each round. Some powerups are 
+	special perks that affect the gameplay
+	permanently until you die. You only have so 
+	many lives, so be careful! When you game over,
+	you can select any stage you've already visited
+	from the menu. Press E to pause.
+	Good luck!! 
+	Only the best can achieve Glory in the Ring!`, SURVIVE);
+
+
 
 let ttTimer = 0;
 let spawnTime = 50;
@@ -273,6 +292,8 @@ export function draw() {
 		surviveOverDraw();
 	} else if (scene == PAUSE) {
 		pauseDraw();
+	} else if (scene == SURVIVETUTORIAL) {
+		survivalTutorialScreen.draw();
 	}
 }
 
@@ -599,8 +620,6 @@ function surviveDraw() {
 	player.show();
 	player.update();
 
-	console.log('Breathe timer:', breatheTimer);
-
 	//Check the bosses health:
 	if (bosses.length > 0) {
 		for (let i = bosses.length - 1; i >= 0; i--) { // Iterate backward to avoid index shifting
@@ -795,6 +814,10 @@ export function mousePressed() {
 		checkButtons(surviveOverButtons, mouseX, mouseY);
 	} else if (scene == PAUSE) {
 		checkButtons(pauseButtons, mouseX, mouseY);
+	} else if (scene == SURVIVETUTORIAL) {
+		survivalTutorialScreen.button.check(mouseX, mouseY);
+
+		console.log("clicked");
 	}
 
 }
@@ -802,7 +825,7 @@ export function mousePressed() {
 export function kill(j) {
 	if ((enemies[j].type == CHASER || enemies[j].type == STANDER || enemies[j].type == TRACER || enemies[j].type == FROG) && enemies[j].killable && stage != TWINSTAGE) {
 		score++;
-	}
+	}	
 	enemies.splice(j, 1);
 	// if (scene == TIMETRIAL) {
 	// 	spawn(random(LEFTWALL+20, RIGHTWALL-20), random(CEILING+20, FLOOR-20), STANDER);
@@ -975,4 +998,10 @@ function updateEnemyIDs() {
 	}
 }
 
+export function getScene() {
+	return scene;
+}
 
+export function setScene(newScene) {
+	scene = newScene;
+}
