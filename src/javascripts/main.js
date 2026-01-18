@@ -123,7 +123,7 @@ let levelButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, FLOOR - 50, 150, 25, "M
 	const columns = 5;
 	const row = Math.floor(index / columns);
 	const column = index % columns;
-	if (index > latestStage) {
+	if (index > 40) {
 		return;
 	}
 	levelButtons.push(new Button(LEFTWALL + column * 90 + 100, CEILING + 80 + row * 70 + 50, 80, 40, `Stage ${index + 1}`, () => {

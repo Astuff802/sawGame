@@ -35,6 +35,8 @@ export class Boss {
             fill(255, 50, 50);
             rect(LEFTWALL, CEILING, (RINGWIDTH / 60) * this.health, 100 * 1.375);
             pop();
+            console.log("Width", (RINGWIDTH / 60) * this.health);
+            console.log("Height", 100 * 1.375);
         }
         if (this.type == BULLETSTORM) {
             if (this.health >= 120) {

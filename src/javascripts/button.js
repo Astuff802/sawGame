@@ -18,6 +18,7 @@ export class Button {
         text(this.text, this.x, this.y + 5);
         pop();
     }
+    
     check(mx, my) {
         if (mx >= this.x - this.w / 2) {
             if (mx <= this.x + this.w / 2) {
