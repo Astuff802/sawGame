@@ -61,13 +61,18 @@ export const BREATHER = allPowerUps.length + 4;
 export const TBOUNCE = allPowerUps.length + 5;
 export const LIGHTNING = allPowerUps.length + 6;
 
-export const COLUMNSTAGE = 4;
-export const BULLETSTAGE = 9;
-export const DREVILSTAGE = 14;
-export const TWINSTAGE = 19;
-const allStages = [COLUMNSTAGE, BULLETSTAGE, DREVILSTAGE, TWINSTAGE];
-let stageBreaks = [10, 25, 40, 55, 56, 70, 85, 100, 115, 116, 130, 145, 160, 175, 176, 190, 205, 220, 235, 236, 250, 265, 280, 295, 310, 325, 340, 355, 370, 385, 400];
-// let stageBreaks = [0, 3, 40, 55, COLUMNSTAGE, 70, 85, 90, 105, 120, 135, 150, 165, 180];
+// export const COLUMNSTAGE = 4;
+// export const BULLETSTAGE = 9;
+// export const DREVILSTAGE = 14;
+// export const TWINSTAGE = 19;
+
+export const DREVILSTAGE = 4;
+export const TWINSTAGE = 9;
+export const COLUMNSTAGE = 14;
+
+const allStages = [COLUMNSTAGE, DREVILSTAGE, TWINSTAGE];
+let stageBreaks = [10, 25, 40, 55, 56, 70, 85, 100, 115, 116, 130, 145, 160, 175, 176, 190, 205, 220, 235, 236, 250, 265, 280, 295, 310, 325, 340, 355, 370, 385];
+// let stageBreaks = [0, BULLETSTAGE];
 // let stageBreaks = [0, BULLETSTAGE, 25, 40, 55, 70, 85, 90, 105, COLUMNSTAGE, 120, 135, 150, 165, 180];
 let latestStage = 0;
 
@@ -385,7 +390,7 @@ function surviveDraw() {
 	////////////////////
 	//How to get to the next stage
 	if (score >= stageBreaks[stage] && breatheTimer < 0) {
-		if (stage != COLUMNSTAGE && stage != BULLETSTAGE && stage != DREVILSTAGE && stage != TWINSTAGE) {
+		if (stage != COLUMNSTAGE /*&& stage != BULLETSTAGE*/ && stage != DREVILSTAGE && stage != TWINSTAGE) {
 			breatheTimer = 180;
 			latestStage = stage + 1;
 			resetLevelButtons();
@@ -422,28 +427,30 @@ function surviveDraw() {
 				potentialPointCount++;
 			}
 		}
-		if (breatheTimer <= 0 && letChoose == false && (potentialPointCount + score < stageBreaks[stage] || stage == COLUMNSTAGE || stage == BULLETSTAGE || stage == DREVILSTAGE || stage == TWINSTAGE)) {
+		if (breatheTimer <= 0 && letChoose == false && (potentialPointCount + score < stageBreaks[stage] || stage == COLUMNSTAGE /*|| stage == BULLETSTAGE*/ || stage == DREVILSTAGE || stage == TWINSTAGE)) {
 			if (bosses.length <= 0) {
 				// ...existing code...
 				if(stage === 0){
 					spawn(spawnX, spawnY, CHASER);
-				} else if (stage < COLUMNSTAGE) {
+				} else if (stage < DREVILSTAGE) {
 					if (Math.random() < 0.5) {
 						spawn(spawnX, spawnY, CHASER);
 					} else {
 						spawn(spawnX, spawnY, BULLET);
 					}
-				} else if (stage < BULLETSTAGE) {
-					// Column lord to bullet hell: 60% chaser/bullet, 40% tracer
-					let r = Math.random();
-					if (r < 0.3) {
-						spawn(spawnX, spawnY, CHASER);
-					} else if (r < 0.6) {
-						spawn(spawnX, spawnY, BULLET);
-					} else {
-						spawn(spawnX, spawnY, TRACER);
-					}
-				} else if (stage < DREVILSTAGE) {
+				} 
+				// else if (stage < BULLETSTAGE) {
+				// 	// Column lord to bullet hell: 60% chaser/bullet, 40% tracer
+				// 	let r = Math.random();
+				// 	if (r < 0.3) {
+				// 		spawn(spawnX, spawnY, CHASER);
+				// 	} else if (r < 0.6) {
+				// 		spawn(spawnX, spawnY, BULLET);
+				// 	} else {
+				// 		spawn(spawnX, spawnY, TRACER);
+				// 	}
+				// } 
+				else if (stage < TWINSTAGE) {
 					// Bullet hell to dr evil: 50% chaser/bullet, 25% tracer, 25% crash zone
 					let r = Math.random();
 					if (r < 0.25) {
@@ -455,7 +462,7 @@ function surviveDraw() {
 					} else {
 						spawn(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), CRASHZONE);
 					}
-				} else if (stage < TWINSTAGE) {
+				} else if (stage < COLUMNSTAGE) {
 					// Dr Evil to Twin: 40% chaser/bullet, 60% split between frog, tracer, crash zone
 					let r = Math.random();
 					if (r < 0.2) {
@@ -643,16 +650,19 @@ function surviveDraw() {
 				breatheTimer = -1;
 				if (stage == COLUMNSTAGE) {
 					bosses.push(new Boss(COLUMNLORD));
-				} else if (stage == BULLETSTAGE) {
-					bosses.push(new Boss(BULLETSTORM));
-				} else if (stage == DREVILSTAGE) {
+				} 
+				// else if (stage == BULLETSTAGE) {
+				// 	bosses.push(new Boss(BULLETSTORM));
+				// } 
+				else if (stage == DREVILSTAGE) {
 					bosses.push(new Boss(DREVIL));
 				} else if (stage == TWINSTAGE) {
 					bosses.push(new Boss(TWIN, LEFTWALL + 200, CEILING - 110));
 					bosses.push(new Boss(TWIN, RIGHTWALL - 200, CEILING - 110));
-				} else if (stage <= BULLETSTAGE) {
-					spawnTime -= 2;
 				}
+				// } else if (stage <= BULLETSTAGE) {
+				// 	spawnTime -= 2;
+				// }
 			}
 			break;
 		}
@@ -690,7 +700,7 @@ function surviveDraw() {
 	drawScore();
 
 	//When do i show the breathe timer text
-	if (breatheTimer > 0 && (score >= stageBreaks[stage] || stage == COLUMNSTAGE || stage == BULLETSTAGE || stage == DREVILSTAGE || stage == TWINSTAGE)) {
+	if (breatheTimer > 0 && (score >= stageBreaks[stage] || stage == COLUMNSTAGE /*|| stage == BULLETSTAGE*/ || stage == DREVILSTAGE || stage == TWINSTAGE)) {
 		breatheTimer--;
 		letChoose = true;
 	}
