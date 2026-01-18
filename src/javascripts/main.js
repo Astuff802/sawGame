@@ -79,19 +79,21 @@ export const DREVIL = 2;
 export const TWIN = 3;
 export let scene = MENU;
 let letChoose = false;
-let menuButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time trial", () => {
-	resetGameState({
-		stageVal: 0,
-		playerX: RINGWIDTH / 2 + LEFTWALL,
-		playerY: RINGWIDTH / 2 + LEFTWALL
-	});
-	scene = TIMETRIAL;
-	ttTimer = 0;
-	clearEnemies();
-	for (let i = 0; i < 3; i++) {
-		enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
-	}
-}), new Button(RINGWIDTH / 2 + LEFTWALL, 330, 150, 25, "Levels", () => scene = LEVELS), new Button(RINGWIDTH / 2 + LEFTWALL, 360, 150, 25, "Survival", () => {
+let menuButtons = [
+// 	new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Time trial", () => {
+// 	resetGameState({
+// 		stageVal: 0,
+// 		playerX: RINGWIDTH / 2 + LEFTWALL,
+// 		playerY: RINGWIDTH / 2 + LEFTWALL
+// 	});
+// 	scene = TIMETRIAL;
+// 	ttTimer = 0;
+// 	clearEnemies();
+// 	for (let i = 0; i < 3; i++) {
+// 		enemies.push(new Enemy(random(LEFTWALL + 20, RIGHTWALL - 20), random(CEILING + 20, FLOOR - 20), i, CHASER));
+// 	}
+// }),
+new Button(RINGWIDTH / 2 + LEFTWALL, 330, 150, 25, "Levels", () => scene = LEVELS), new Button(RINGWIDTH / 2 + LEFTWALL, 360, 150, 25, "Survival", () => {
 	resetGameState({
 		playerX: RINGWIDTH / 2 + LEFTWALL,
 		playerY: FLOOR - RINGHEIGHT / 2,
