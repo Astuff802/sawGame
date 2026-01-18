@@ -155,8 +155,8 @@ let surviveOverButtons = [new Button(RINGWIDTH / 2 + LEFTWALL, 300, 150, 25, "Tr
 
 //Screens and stuff
 let survivalTutorialScreen = new TutorialScreen(`
-	Fight your way through all 40 rounds and
-	beat all the bosses to win the title belt!
+	Fight your way through all 15 rounds and
+	beat all 3 bosses to win the title belt!
 	Click to launch your partner at enemies, 
 	and press space to use powerups you collect
 	at the end of each round. Some powerups are 
